@@ -5,6 +5,7 @@ from kivy.uix.label import Label
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.core.window import Window
+import kivy.core.window.window_info as f
 from kivy.uix.widget import Widget
 import threading
 from socket import *
@@ -13,12 +14,11 @@ import sys
 HEIGHT = 900
 WEIGHT = 600
 
-
 host_name = 'localhost'
 port = 8080
 address = (host_name, port)
 
-Window.size = (HEIGHT, WEIGHT)
+#Window.size = (HEIGHT, WEIGHT)
 Window.clearcolor = (1, 1, 1, 1)
 Window.title = "Навигация"
 
@@ -77,7 +77,7 @@ class MyApp(App):
 
     def build(self):
         x.start()
-        layout = GridLayout(cols=3, rows=3, row_force_default=True, row_default_height=250)
+        layout = GridLayout(cols=3, rows=3, row_force_default=True, row_default_height=Window.width / 3)
         layout.add_widget(Button(background_color=(1, 1, 1, 0)))
         layout.add_widget(self.forward)
         layout.add_widget(Button(background_color=(1, 1, 1, 0)))
