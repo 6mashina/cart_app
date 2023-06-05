@@ -18,7 +18,7 @@ host_name = 'localhost'
 port = 8080
 address = (host_name, port)
 
-Window.size = (300, 600)
+# Window.size = (HEIGHT, WEIGHT)
 Window.clearcolor = (1, 1, 1, 1)
 Window.title = "Навигация"
 
@@ -77,7 +77,7 @@ class MyApp(App):
 
     def build(self):
         x.start()
-        layout = GridLayout(cols=3, rows=3, row_force_default=True, row_default_height=Window.height / 3)
+        layout = GridLayout(cols=3, rows=3, row_force_default=True, row_default_height=Window.width / 3)
         layout.add_widget(Button(background_color=(1, 1, 1, 0)))
         layout.add_widget(self.forward)
         layout.add_widget(Button(background_color=(1, 1, 1, 0)))
