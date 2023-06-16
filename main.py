@@ -20,7 +20,7 @@ data = "0000"
 def send_data(data):
     tmp = str.encode(data)
     try:
-        udp_socket.sendto(tmp, address)
+       '''udp_socket.sendto(tmp, address)'''
     except Exception as e:
         print("Ошибка отправки данных:", e)
 
