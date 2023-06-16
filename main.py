@@ -1,9 +1,12 @@
 from kivy.app import App
 from kivy.uix.anchorlayout import AnchorLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.button import Button
 from kivy.core.window import Window
 from socket import *
+
+from kivy.uix.gridlayout import GridLayout
 
 host_name = "192.168.4.1"
 port = 1234
@@ -14,159 +17,136 @@ Window.title = "Навигация"
 data = "0000"
 
 
+def send_data(data):
+    tmp = str.encode(data)
+    try:
+        udp_socket.sendto(tmp, address)
+    except Exception as e:
+        print("Ошибка отправки данных:", e)
+
+
 class MyApp(App):
     def __init__(self):
         super().__init__()
         self.left = Button(text="",
-                           size_hint=(.3, .3),
+
                            background_normal='left.png',
                            color=(0, 1, 1, 1),
                            )
-        self.on = Button(text="on",
-                         size_hint=(.3, .1),
-                         color=(0, 1, 1, 1),
-                         )
-        self.off = Button(text="off",
-                          size_hint=(.3, .1),
-                          color=(0, 1, 1, 1),
-                          )
+        self.onCart = Button(text="on",
+
+                             color=(0, 1, 1, 1),
+                             )
+        self.offCart = Button(text="off",
+
+                              color=(0, 1, 1, 1),
+                              )
         self.fcSp = Button(text="1",
-                           size_hint=(.3, .1),
+
                            color=(0, 1, 1, 1),
                            )
         self.scSp = Button(text="2",
-                           size_hint=(.3, .1),
+
                            color=(0, 1, 1, 1),
                            )
         self.thSp = Button(text="3",
-                           size_hint=(.3, .1),
+
                            color=(0, 1, 1, 1),
                            )
 
         self.left.bind(state=self.turn_left)
 
         self.stop = Button(text="stop",
-                           size_hint=(.3, .3),
+
                            color=(0, 1, 1, 1),
                            )
         self.stop.bind(state=self.stoped)
         self.right = Button(text="",
-                            size_hint=(.3, .3),
+
                             background_normal='right.png',
                             font_size="20sp",
                             color=(0, 1, 1, 1),
                             )
         self.right.bind(state=self.turn_right)
         self.forward = Button(text="",
-                              size_hint=(.3, .3),
+
                               background_normal='forward.png',
                               font_size="20sp",
                               color=(0, 1, 1, 1),
                               )
         self.forward.bind(state=self.forwardd)
         self.back = Button(text="",
-                           size_hint=(.3, .3),
+
                            background_normal='back.png',
                            font_size="20sp",
                            color=(0, 1, 1, 1),
                            )
         self.back.bind(state=self.turn_back)
+        self.onCart.bind(state=self.on_cart)
+        self.offCart.bind(state=self.off_cart)
+        self.fcSp.bind(state=self.fr_speed)
+        self.scSp.bind(state=self.sc_speed)
+        self.thSp.bind(state=self.th_speed)
 
     def build(self):
-        main_l = FloatLayout()
-        main_right_l = FloatLayout(size_hint=(0.5, 0.9))
-        on_l = AnchorLayout(anchor_x='center', anchor_y='top')
-        off_l = AnchorLayout(anchor_x='right', anchor_y='top')
-        frSp_l = AnchorLayout(anchor_x='center', anchor_y='center')
-        scSp_l = AnchorLayout(anchor_x='right', anchor_y='center')
-        thSp_l = AnchorLayout(anchor_x='right', anchor_y='bottom')
-        stop_l = AnchorLayout(anchor_x='center', anchor_y='center')
-        back_l = AnchorLayout(anchor_x='center', anchor_y='bottom')
-        forward_l = AnchorLayout(anchor_x='center', anchor_y='top')
-        left_l = AnchorLayout(anchor_x='left', anchor_y='center')
-        right_l = AnchorLayout(anchor_x='right', anchor_y='center')
-        frSp_l.add_widget(self.fcSp)
-        scSp_l.add_widget(self.scSp)
-        thSp_l.add_widget(self.thSp)
-        on_l.add_widget(self.on)
-        off_l.add_widget(self.off)
-        stop_l.add_widget(self.stop)
-        back_l.add_widget(self.back)
-        forward_l.add_widget(self.forward)
-        left_l.add_widget(self.left)
-        right_l.add_widget(self.right)
-        main_right_l.add_widget(stop_l)
-        main_right_l.add_widget(back_l)
-        main_right_l.add_widget(forward_l)
-        main_right_l.add_widget(left_l)
-        main_right_l.add_widget(right_l)
-        main_l.add_widget(main_right_l)
-        main_l.add_widget(on_l)
-        main_l.add_widget(off_l)
-        main_l.add_widget(frSp_l)
-        main_l.add_widget(scSp_l)
-        main_l.add_widget(thSp_l)
-        return main_l
+        buttonList = [self.onCart, BoxLayout(), self.offCart,
+                      BoxLayout(), self.forward,
+                      BoxLayout(), self.left, self.stop,
+                      self.right, BoxLayout(), self.back, BoxLayout(), self.fcSp,
+                      self.scSp, self.thSp]
+        gridLayout = GridLayout(cols=3)
+        for i in range(15):
+            gridLayout.add_widget(buttonList[i])
+        return gridLayout
 
     def turn_right(self, state, value):
         global data
         data = 'right' if value == 'down' else 'stop'
-        tmp = str.encode(data)
-        udp_socket.sendto(tmp, address)
+        send_data(data)
 
-    def on(self, state, value):
+    def on_cart(self, state, value):
         global data
         data = 'on'
-        tmp = str.encode(data)
-        udp_socket.sendto(tmp, address)
+        send_data(data)
 
-    def off(self, state, value):
+    def off_cart(self, state, value):
         global data
         data = 'off'
-        tmp = str.encode(data)
-        udp_socket.sendto(tmp, address)
+        send_data(data)
 
     def fr_speed(self, state, value):
         global data
         data = 'frSp'
-        tmp = str.encode(data)
-        udp_socket.sendto(tmp, address)
+        send_data(data)
 
     def sc_speed(self, state, value):
         global data
         data = 'scSp'
-        tmp = str.encode(data)
-        udp_socket.sendto(tmp, address)
+        send_data(data)
 
     def th_speed(self, state, value):
         global data
         data = 'thSp'
-        tmp = str.encode(data)
-        udp_socket.sendto(tmp, address)
+        send_data(data)
 
     def turn_left(self, state, value):
         global data
         data = 'left' if value == 'down' else 'stop'
-        tmp = str.encode(data)
-        udp_socket.sendto(tmp, address)
+        send_data(data)
 
     def stoped(self, state, value):
         global data
         data = 'stop'
-        tmp = str.encode(data)
-        udp_socket.sendto(tmp, address)
+        send_data(data)
 
     def forwardd(self, state, value):
         global data
         data = 'forward' if value == 'down' else 'stop'
-        tmp = str.encode(data)
-        udp_socket.sendto(tmp, address)
+        send_data(data)
 
     def turn_back(self, state, value):
-        global data
         data = 'back' if value == 'down' else 'stop'
-        tmp = str.encode(data)
-        udp_socket.sendto(tmp, address)
+        send_data(data)
 
 
 # Запуск проекта
