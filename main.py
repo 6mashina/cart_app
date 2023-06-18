@@ -1,7 +1,5 @@
 from kivy.app import App
-from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.button import Button
 from kivy.core.window import Window
 from socket import *
@@ -18,9 +16,9 @@ data = "0000"
 
 
 def send_data(data):
-    '''tmp = str.encode(data)'''
+    tmp = str.encode(data)
     try:
-       '''udp_socket.sendto(tmp, address)'''
+        udp_socket.sendto(tmp, address)
     except Exception as e:
         print("Ошибка отправки данных:", e)
 
@@ -29,54 +27,44 @@ class MyApp(App):
     def __init__(self):
         super().__init__()
         self.left = Button(text="",
-
                            background_normal='left.png',
                            color=(0, 1, 1, 1),
                            )
         self.onCart = Button(text="on",
-
                              color=(0, 1, 1, 1),
                              )
         self.offCart = Button(text="off",
-
                               color=(0, 1, 1, 1),
                               )
         self.fcSp = Button(text="1",
-
                            color=(0, 1, 1, 1),
                            )
         self.scSp = Button(text="2",
-
                            color=(0, 1, 1, 1),
                            )
         self.thSp = Button(text="3",
-
                            color=(0, 1, 1, 1),
                            )
 
         self.left.bind(state=self.turn_left)
 
         self.stop = Button(text="stop",
-
                            color=(0, 1, 1, 1),
                            )
         self.stop.bind(state=self.stoped)
         self.right = Button(text="",
-
                             background_normal='right.png',
                             font_size="20sp",
                             color=(0, 1, 1, 1),
                             )
         self.right.bind(state=self.turn_right)
         self.forward = Button(text="",
-
                               background_normal='forward.png',
                               font_size="20sp",
                               color=(0, 1, 1, 1),
                               )
         self.forward.bind(state=self.forwardd)
         self.back = Button(text="",
-
                            background_normal='back.png',
                            font_size="20sp",
                            color=(0, 1, 1, 1),
