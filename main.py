@@ -1,29 +1,32 @@
-import kivy
-from kivy.app import App
+import threading
 
-from kivy.uix.label import Label
-from kivy.uix.gridlayout import GridLayout
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.core.window import Window
-import kivy.core.window.window_info as f
-from kivy.uix.widget import Widget
-import threading
 from socket import *
-import sys
 
-HEIGHT = 900
-WEIGHT = 600
+from kivy.uix.gridlayout import GridLayout
 
 host_name = "192.168.4.1"
 port = 1234
 address = (host_name, port)
-
-#Window.size = (HEIGHT, WEIGHT)
+udp_socket = socket(AF_INET, SOCK_DGRAM)
 Window.clearcolor = (1, 1, 1, 1)
 Window.title = "Навигация"
-address = (host_name, port)
-udp_socket = socket(AF_INET, SOCK_DGRAM)
 data = "0000"
+
+
+def transport_function():
+    while True:
+        global data
+        global udp_socket
+        print(data)
+        tmp = str.encode(data)
+        udp_socket.sendto(tmp, address)
+
+
+x = threading.Thread(target=transport_function, daemon=True)
 
 
 def send_data(data):
@@ -34,21 +37,33 @@ def send_data(data):
         print("Ошибка отправки данных:", e)
 
 
-
 class MyApp(App):
-
     def __init__(self):
         super().__init__()
+        x.start()
         self.left = Button(text="",
                            background_normal='left.png',
-                           font_size="20sp",
+                           color=(0, 1, 1, 1),
+                           )
+        self.onCart = Button(text="on",
+                             color=(0, 1, 1, 1),
+                             )
+        self.offCart = Button(text="off",
+                              color=(0, 1, 1, 1),
+                              )
+        self.fcSp = Button(text="1",
+                           color=(0, 1, 1, 1),
+                           )
+        self.scSp = Button(text="2",
+                           color=(0, 1, 1, 1),
+                           )
+        self.thSp = Button(text="3",
                            color=(0, 1, 1, 1),
                            )
 
         self.left.bind(state=self.turn_left)
 
         self.stop = Button(text="stop",
-                           font_size="20sp",
                            color=(0, 1, 1, 1),
                            )
         self.stop.bind(state=self.stoped)
@@ -70,43 +85,62 @@ class MyApp(App):
                            color=(0, 1, 1, 1),
                            )
         self.back.bind(state=self.turn_back)
+        self.onCart.bind(state=self.on_cart)
+        self.offCart.bind(state=self.off_cart)
+        self.fcSp.bind(state=self.fr_speed)
+        self.scSp.bind(state=self.sc_speed)
+        self.thSp.bind(state=self.th_speed)
 
     def build(self):
-        layout = GridLayout(cols=3, rows=3, row_force_default=True, row_default_height=Window.width / 3)
-        layout.add_widget(Button(background_color=(1, 1, 1, 0)))
-        layout.add_widget(self.forward)
-        layout.add_widget(Button(background_color=(1, 1, 1, 0)))
-        layout.add_widget(self.left)
-        layout.add_widget(self.stop)
-        layout.add_widget(self.right)
-        layout.add_widget(Button(background_color=(1, 1, 1, 0)))
-        layout.add_widget(self.back)
-        return layout
+        buttonList = [self.onCart, BoxLayout(), self.offCart,
+                      BoxLayout(), self.forward,
+                      BoxLayout(), self.left, self.stop,
+                      self.right, BoxLayout(), self.back, BoxLayout(), self.fcSp,
+                      self.scSp, self.thSp]
+        gridLayout = GridLayout(cols=3)
+        for i in range(15):
+            gridLayout.add_widget(buttonList[i])
+        return gridLayout
 
     def turn_right(self, state, value):
         global data
-        data = '1000' if value == 'down' else '0000'
-        send_data(data)
+        data = 'right' if value == 'down' else 'stop'
+
+    def on_cart(self, state, value):
+        global data
+        data = 'on'
+
+    def off_cart(self, state, value):
+        global data
+        data = 'off'
+
+    def fr_speed(self, state, value):
+        global data
+        data = 'frSp'
+
+    def sc_speed(self, state, value):
+        global data
+        data = 'scSp'
+
+    def th_speed(self, state, value):
+        global data
+        data = 'thSp'
 
     def turn_left(self, state, value):
         global data
-        data = '0100' if value == 'down' else '0000'
-        send_data(data)
+        data = 'left' if value == 'down' else 'stop'
 
     def stoped(self, state, value):
         global data
-        data = '0000'
-        send_data(data)
+        data = 'stop'
 
     def forwardd(self, state, value):
         global data
-        data = '0010' if value == 'down' else '0000'
-        send_data(data)
+        data = 'forward' if value == 'down' else 'stop'
 
     def turn_back(self, state, value):
         global data
-        data = '0001' if value == 'down' else '0000'
-        send_data(data)
+        data = 'back' if value == 'down' else 'stop'
 
 
 # Запуск проекта
